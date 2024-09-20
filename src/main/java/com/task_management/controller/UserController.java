@@ -5,6 +5,7 @@ import com.task_management.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -37,6 +38,10 @@ public class UserController {
     @PutMapping("/{id}")
     public UserEntity updateUser(@PathVariable Long id, @RequestBody UserEntity user) {
         return userService.updateUser(id, user);
+    }
+    @PatchMapping("/{id}")
+    public UserEntity userPatch(@PathVariable Long id, @RequestBody UserEntity user) {
+        return userService.patchUser(id, user);
     }
 
 
