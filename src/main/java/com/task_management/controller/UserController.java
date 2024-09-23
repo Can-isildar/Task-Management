@@ -1,16 +1,16 @@
 package com.task_management.controller;
-
 import com.task_management.model.UserEntity;
 import com.task_management.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -27,8 +27,8 @@ public class UserController {
     }
 
     @PostMapping
-    public UserEntity createUser(@RequestBody UserEntity user) {
-        return userService.saveUser(user);
+    public UserEntity registerUser(@RequestBody UserEntity user) {
+        return userService.registerUser(user);
     }
 
     @DeleteMapping("/{id}")

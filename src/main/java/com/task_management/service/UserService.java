@@ -2,24 +2,30 @@ package com.task_management.service;
 
 import com.task_management.model.UserEntity;
 import com.task_management.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class UserService {
-
     private final UserRepository userRepository; // 'final' olmalı
+    private final PasswordEncoder passwordEncoder;
 
     // Constructor ile bağımlılığı geçiyoruz
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity saveUser(UserEntity user) {
-        return userRepository.save(user);
-
+    public UserEntity registerUser(UserEntity user) {
+        if (user.getPassword() != null && user.getUsername() != null) {
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+            return userRepository.save(user);
+        }
+        throw new RuntimeException("Invalid username or password");
     }
 
     public UserEntity updateUser(Long id, UserEntity user) {
@@ -40,7 +46,11 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("İstenilen deger silinemedi");
+        }
     }
 
     public List<UserEntity> getAllUsers() {
