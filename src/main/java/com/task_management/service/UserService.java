@@ -28,6 +28,14 @@ public class UserService {
         throw new RuntimeException("Invalid username or password");
     }
 
+    public UserEntity loginUser(UserEntity user) {
+        if (user.getPassword() != null && user.getUsername() != null) {
+            return null;
+        }else {
+            return null;
+        }
+    }
+
     public UserEntity updateUser(Long id, UserEntity user) {
         if (userRepository.existsById(id)) {
             return userRepository.findById(id).map(userUpdate -> {
