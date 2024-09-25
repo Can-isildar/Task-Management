@@ -1,23 +1,28 @@
 package com.task_management.service;
 
-import com.task_management.model.UserEntity;
+
+import com.task_management.dto.UserRequestDTO;
+import com.task_management.dto.UserResponseDTO;
+
 import java.util.List;
 
 public interface UserService {
 
-    UserEntity registerUser(UserEntity user);
+    UserResponseDTO registerUser(UserRequestDTO userDTO);
 
-    UserEntity loginUser(UserEntity user);
-
-    UserEntity updateUser(Long id, UserEntity user);
+    UserResponseDTO loginUser(UserRequestDTO userDTO);
 
     void deleteUser(Long id);
 
-    List<UserEntity> getAllUsers();
+    UserResponseDTO updateUser(Long id, UserRequestDTO userDTO);
 
-    UserEntity getUserById(Long id);
+    UserResponseDTO patchUser(Long id, UserRequestDTO userDTO);
 
-    UserEntity patchUser(Long id, UserEntity user);
+    UserResponseDTO getUserById(Long id);
+
+    List<UserResponseDTO> getAllUsers();
+
+
 
 
 }

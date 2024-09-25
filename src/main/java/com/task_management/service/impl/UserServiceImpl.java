@@ -1,104 +1,122 @@
 package com.task_management.service.impl;
 
+import com.task_management.dto.UserRequestDTO;
+import com.task_management.dto.UserResponseDTO;
+import com.task_management.mapper.UserMapper;
 import com.task_management.model.UserEntity;
 import com.task_management.repository.UserRepository;
 import com.task_management.service.UserService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public UserEntity registerUser(UserEntity user) {
-        if (user.getPassword() != null && user.getUsername() != null) {
-            String encodedPassword = passwordEncoder.encode(user.getPassword());
-            user.setPassword(encodedPassword);
-            return userRepository.save(user);
-        }
-        throw new RuntimeException("Invalid username or password");
+    public UserResponseDTO registerUser(UserRequestDTO userDTO) {
+        UserEntity userEntity = userMapper.toEntity(userDTO);
+
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+
+        UserEntity savedUser = userRepository.save(userEntity);
+
+        return userMapper.toResponseDTO(savedUser);
     }
 
-    @Override
-    public UserEntity loginUser(UserEntity user) {
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(user.getUsername());
+    public UserResponseDTO loginUser(UserRequestDTO userDTO) {
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(userDTO.getUsername());
         if (optionalUser.isPresent()) {
-            UserEntity foundUser = optionalUser.get();
-            if (passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
-                return foundUser;
+            UserEntity founderUser = optionalUser.get();
+            if (passwordEncoder.matches(userDTO.getPassword(), founderUser.getPassword())) {
+                return userMapper.toResponseDTO(founderUser);
             } else {
-                throw new RuntimeException("Invalid password");
+                throw new BadCredentialsException("Wrong password");
             }
         } else {
-            throw new RuntimeException("Invalid username");
+            throw new RuntimeException("Incorrect username or password");
         }
+
     }
 
     @Override
-    public UserEntity updateUser(Long id, UserEntity user) {
-        if (userRepository.existsById(id)) {
-            return userRepository.findById(id).map(userUpdate -> {
-                userUpdate.setName(user.getName());
-                userUpdate.setPassword(user.getPassword());
-                userUpdate.setEmail(user.getEmail());
-                userUpdate.setPhone(user.getPhone());
-                userUpdate.setUsername(user.getUsername());
-                return userRepository.save(userUpdate);
-            }).orElseThrow(() -> new RuntimeException("User not found"));
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserResponseDTO getUserById(Long id) {
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            return userMapper.toResponseDTO(optionalUser.get());
         } else {
             throw new RuntimeException("User not found");
         }
     }
 
     @Override
-    public void deleteUser(Long id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Unable to delete user");
+    public List<UserResponseDTO> getAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+        return users.stream().map(userMapper::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDTO updateUser(Long id, UserRequestDTO userDTO) {
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            UserEntity founderUser = optionalUser.get();
+            founderUser.setUsername(userDTO.getUsername());
+            founderUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            founderUser.setEmail(userDTO.getEmail());
+            if(founderUser.getName() != null){
+                founderUser.setName(userDTO.getName());
+            }
+            if (founderUser.getPhone() != null){
+                founderUser.setPhone(userDTO.getPhone());
+            }
+            return userMapper.toResponseDTO(userRepository.save(founderUser));
         }
+        throw new RuntimeException("User not found");
     }
 
     @Override
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public UserResponseDTO patchUser(Long id, UserRequestDTO userDTO) {
+        Optional<UserEntity> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            UserEntity founderUser = optionalUser.get();
+            if (founderUser.getName() != null){
+                founderUser.setName(userDTO.getName());
+            }
+            if (founderUser.getPhone() != null){
+                founderUser.setPhone(userDTO.getPhone());
+            }
+            if (founderUser.getEmail() != null){
+                founderUser.setEmail(userDTO.getEmail());
+            }
+            if (founderUser.getPassword() != null){
+                founderUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            }
+            if (founderUser.getUsername() != null){
+                founderUser.setUsername(userDTO.getUsername());
+            }
+            return userMapper.toResponseDTO(userRepository.save(founderUser));
+        }
+        throw new RuntimeException("User not found");
     }
 
-    @Override
-    public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
 
-    @Override
-    public UserEntity patchUser(Long id, UserEntity user) {
-        return userRepository.findById(id).map(userPatch -> {
-            if (user.getName() != null) {
-                userPatch.setName(user.getName());
-            }
-            if (user.getPassword() != null) {
-                userPatch.setPassword(user.getPassword());
-            }
-            if (user.getEmail() != null) {
-                userPatch.setEmail(user.getEmail());
-            }
-            if (user.getPhone() != null) {
-                userPatch.setPhone(user.getPhone());
-            }
-            if (user.getUsername() != null) {
-                userPatch.setUsername(user.getUsername());
-            }
-            return userRepository.save(userPatch);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
-    }
 }

@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()  // CSRF korumasını devre dışı bırak (isteğe bağlı)
                 .authorizeRequests()
-                .requestMatchers("/api/users", "/api/users/login").permitAll()  // Kayıt ve giriş işlemleri kimlik doğrulaması gerektirmez
+                .requestMatchers("/api/users/register", "/api/users/login").permitAll()  // Kayıt ve giriş işlemleri kimlik doğrulaması gerektirmez
                 .anyRequest().authenticated()  // Diğer tüm istekler kimlik doğrulaması gerektirir
                 .and()
                 .formLogin().disable();  // Varsayılan form tabanlı giriş devre dışı bırakıldı
