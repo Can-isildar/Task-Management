@@ -1,5 +1,6 @@
 package com.task_management.controller;
 
+import com.task_management.dto.LoginRequestDTO;
 import com.task_management.dto.UserRequestDTO;
 import com.task_management.dto.UserResponseDTO;
 import com.task_management.service.UserService;
@@ -33,8 +34,8 @@ public class UserController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody UserRequestDTO userDTO) {
-        UserResponseDTO loginUser = userService.loginUser(userDTO);
+    public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginDTO) {
+        UserResponseDTO loginUser = userService.loginUser(loginDTO);
         return ResponseEntity.ok(loginUser);
     }
 

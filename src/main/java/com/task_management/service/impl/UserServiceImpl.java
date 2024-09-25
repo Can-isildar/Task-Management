@@ -1,5 +1,6 @@
 package com.task_management.service.impl;
 
+import com.task_management.dto.LoginRequestDTO;
 import com.task_management.dto.UserRequestDTO;
 import com.task_management.dto.UserResponseDTO;
 import com.task_management.mapper.UserMapper;
@@ -38,11 +39,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponseDTO(savedUser);
     }
 
-    public UserResponseDTO loginUser(UserRequestDTO userDTO) {
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(userDTO.getUsername());
+    @Override
+    public UserResponseDTO loginUser(LoginRequestDTO loginDTO) {
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(loginDTO.getUsername());
         if (optionalUser.isPresent()) {
             UserEntity founderUser = optionalUser.get();
-            if (passwordEncoder.matches(userDTO.getPassword(), founderUser.getPassword())) {
+            if (passwordEncoder.matches(loginDTO.getPassword(), founderUser.getPassword())) {
                 return userMapper.toResponseDTO(founderUser);
             } else {
                 throw new BadCredentialsException("Wrong password");
@@ -82,10 +84,10 @@ public class UserServiceImpl implements UserService {
             founderUser.setUsername(userDTO.getUsername());
             founderUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             founderUser.setEmail(userDTO.getEmail());
-            if(founderUser.getName() != null){
+            if (founderUser.getName() != null) {
                 founderUser.setName(userDTO.getName());
             }
-            if (founderUser.getPhone() != null){
+            if (founderUser.getPhone() != null) {
                 founderUser.setPhone(userDTO.getPhone());
             }
             return userMapper.toResponseDTO(userRepository.save(founderUser));
@@ -98,19 +100,19 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             UserEntity founderUser = optionalUser.get();
-            if (founderUser.getName() != null){
+            if (founderUser.getName() != null) {
                 founderUser.setName(userDTO.getName());
             }
-            if (founderUser.getPhone() != null){
+            if (founderUser.getPhone() != null) {
                 founderUser.setPhone(userDTO.getPhone());
             }
-            if (founderUser.getEmail() != null){
+            if (founderUser.getEmail() != null) {
                 founderUser.setEmail(userDTO.getEmail());
             }
-            if (founderUser.getPassword() != null){
+            if (founderUser.getPassword() != null) {
                 founderUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             }
-            if (founderUser.getUsername() != null){
+            if (founderUser.getUsername() != null) {
                 founderUser.setUsername(userDTO.getUsername());
             }
             return userMapper.toResponseDTO(userRepository.save(founderUser));
