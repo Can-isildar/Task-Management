@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring") // Spring ile entegre çalşmasını sağlar DI ile bean oluşturur.
 public interface UserMapper {
+    @Mapping(source = "password", target = "password")
     UserEntity toEntity(UserRequestDTO dto);
 
     UserResponseDTO toResponseDTO(UserEntity entity);
