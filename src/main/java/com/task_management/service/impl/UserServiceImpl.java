@@ -8,6 +8,9 @@ import com.task_management.model.UserEntity;
 import com.task_management.repository.UserRepository;
 import com.task_management.service.UserService;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,32 +31,6 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    @Override
-    public UserResponseDTO registerUser(UserRequestDTO userDTO) {
-        UserEntity userEntity = userMapper.toEntity(userDTO);
-
-        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-
-        UserEntity savedUser = userRepository.save(userEntity);
-
-        return userMapper.toResponseDTO(savedUser);
-    }
-
-    @Override
-    public UserResponseDTO loginUser(LoginRequestDTO loginDTO) {
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(loginDTO.getUsername());
-        if (optionalUser.isPresent()) {
-            UserEntity founderUser = optionalUser.get();
-            if (passwordEncoder.matches(loginDTO.getPassword(), founderUser.getPassword())) {
-                return userMapper.toResponseDTO(founderUser);
-            } else {
-                throw new BadCredentialsException("Wrong password");
-            }
-        } else {
-            throw new RuntimeException("Incorrect username or password");
-        }
-
-    }
 
     @Override
     public void deleteUser(Long id) {
@@ -121,4 +98,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return (UserDetails) userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Member is not valid"));
+    }
 }

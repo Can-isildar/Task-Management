@@ -23,22 +23,6 @@ public class UserController {
     }
 
 
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO userDTO) {
-        UserResponseDTO registerUser = userService.registerUser(userDTO);
-        return ResponseEntity.ok(registerUser);
-    }
-
-    @PostMapping("/login")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @ResponseBody
-    public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginDTO) {
-        UserResponseDTO loginUser = userService.loginUser(loginDTO);
-        return ResponseEntity.ok(loginUser);
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
