@@ -1,6 +1,7 @@
 package com.task_management.dto;
 
 
+import com.task_management.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,5 +25,7 @@ public class UserRequestDTO {
     private String name;
 
     private String phone;
+
+    private Role role;
 
 }

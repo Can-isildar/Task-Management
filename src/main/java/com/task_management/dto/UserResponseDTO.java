@@ -1,5 +1,6 @@
 package com.task_management.dto;
 
+import com.task_management.model.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +11,6 @@ public class UserResponseDTO {
     private String name;
     private String email;
     private String phone;
+    private Role role;
 
 }
