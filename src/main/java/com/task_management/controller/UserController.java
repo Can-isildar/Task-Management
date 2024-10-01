@@ -1,12 +1,11 @@
 package com.task_management.controller;
 
-import com.task_management.dto.LoginRequestDTO;
 import com.task_management.dto.UserRequestDTO;
 import com.task_management.dto.UserResponseDTO;
 import com.task_management.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
