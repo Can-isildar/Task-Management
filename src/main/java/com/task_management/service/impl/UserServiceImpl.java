@@ -1,13 +1,11 @@
 package com.task_management.service.impl;
 
-import com.task_management.dto.LoginRequestDTO;
 import com.task_management.dto.UserRequestDTO;
 import com.task_management.dto.UserResponseDTO;
 import com.task_management.mapper.UserMapper;
 import com.task_management.model.UserEntity;
 import com.task_management.repository.UserRepository;
 import com.task_management.service.UserService;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
