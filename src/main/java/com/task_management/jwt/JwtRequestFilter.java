@@ -31,6 +31,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
+    // Bu metod, her HTTP isteği geldiğinde çalışır ve JWT token doğrulama işlemini gerçekleştirir.
+    //    doFilterInternal(): Bu metot, gelen her HTTP isteği üzerinde çalışır. Her istek geldiğinde JWT doğrulama işlemi yapılır.
+    //    HttpServletRequest request: Gelen isteği temsil eder. Bu istekteki Authorization başlığından JWT token alınır.
+    //    HttpServletResponse response: Yanıtı temsil eder.
+    //    FilterChain filterChain: Filtre zincirini temsil eder. Doğrulama işlemi tamamlandıktan sonra, isteği zincirin bir sonraki filtresine iletmek için kullanılır.
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
@@ -42,6 +47,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             username = jwtTokenUtil.extractUsername(jwt);
         }
+
+    // UsernamePasswordAuthenticationToken: Bu nesne, Spring Security'de bir kullanıcının kimlik doğrulaması yapılmış olduğunu gösterir.
+    // Kullanıcı bilgileri (userDetails), yetkileri (rolleri) ve kimlik doğrulaması için kullanılır.
+    // SecurityContextHolder: Kullanıcı doğrulandıktan sonra, bu doğrulama bilgisi (authentication) SecurityContextHolder içine yerleştirilir. Bu, Spring Security'nin bu kullanıcının kimlik doğrulaması yapıldığını anlamasını sağlar ve sonraki işlemlerde kullanıcıya yetkilerini verir.
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userService.loadUserByUsername(username);

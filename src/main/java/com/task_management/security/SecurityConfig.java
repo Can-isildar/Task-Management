@@ -15,14 +15,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // @EnableWebSecurity ekleyerek Spring Security ve MVC entegrasyon desteği elde ediyoruz
 public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter; // JWT filtresini ekliyoruz
+    private final JwtRequestFilter jwtRequestFilter; // JWT filtresini ekliyoruz
+
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,7 +33,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(); // veri tabannındaki kullanıcıların kimlik dogrulamasını yapan bir sağlayıcıdır
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);  // Password encoder ekleniyor
         return new ProviderManager(daoAuthenticationProvider);
@@ -46,8 +48,8 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT için stateless oturum
-                .httpBasic(Customizer.withDefaults())
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT için stateless oturum.  JWT ile oturum yönetimi stateless olduğundan, sunucu tarafında oturum saklanmaz.
+                .httpBasic(Customizer.withDefaults()) // Basic authentication, Kullanıcı adı ve şifre ile doğrulama işlemi yapar
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // JWT filtresini ekliyoruz
                 .build();
     }
